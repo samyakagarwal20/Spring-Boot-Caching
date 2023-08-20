@@ -1,7 +1,6 @@
 package com.yflash.tech.SampleAPI.service.impl;
 
 import com.yflash.tech.SampleAPI.entity.UserEntity;
-import com.yflash.tech.SampleAPI.model.in.DeleteUserRequest;
 import com.yflash.tech.SampleAPI.model.in.PostUserRequest;
 import com.yflash.tech.SampleAPI.model.in.PutUserRequest;
 import com.yflash.tech.SampleAPI.model.out.User;
@@ -11,6 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(cacheNames = "users", key = "#id")
     public User getUserById(Integer id) {
         UserEntity userEntity = userRepository.getReferenceById(id);
         return modelMapper.map(userEntity,User.class);
@@ -43,12 +46,14 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userEntity, User.class);
     }
     @Override
+    @CachePut(cacheNames = "users", key = "#userRequest.id")
     public User updateUserDetails(PutUserRequest userRequest) {
         UserEntity userEntity = modelMapper.map(userRequest,UserEntity.class);
         userEntity = userRepository.save(userEntity);
         return modelMapper.map(userEntity, User.class);
     }
     @Override
+    @CacheEvict(cacheNames = "users", key = "#id")
     public String deleteUserDetails(Integer id) {
         if(userRepository.existsById(id)) {
             userRepository.deleteById(id);
