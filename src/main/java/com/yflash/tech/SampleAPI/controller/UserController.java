@@ -7,6 +7,7 @@ import com.yflash.tech.SampleAPI.model.in.PostUserRequest;
 import com.yflash.tech.SampleAPI.model.in.PutUserRequest;
 import com.yflash.tech.SampleAPI.model.out.User;
 import com.yflash.tech.SampleAPI.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,27 +27,32 @@ public class UserController {
     UserService userService;
 
     @GetMapping(value = "/get-all-users", produces = "application/json")
-    ResponseEntity<List<UserEntity>> getAllUsers() {
+    ResponseEntity<List<UserEntity>> getAllUsers(HttpServletRequest request) {
+        LOGGER.info("Intercepted request for {}", request.getRequestURL());
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/get-user-by-id", produces = "application/json", consumes = "application/json")
-    ResponseEntity<User> getUserById(@RequestBody GetUserRequest userRequest) {
+    ResponseEntity<User> getUserById(@RequestBody GetUserRequest userRequest, HttpServletRequest request) {
+        LOGGER.info("Intercepted request for {}", request.getRequestURL());
         return new ResponseEntity<>(userService.getUserById(userRequest.getId()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/add-user", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<User> addUserDetails(@RequestBody PostUserRequest userRequest) {
+    public ResponseEntity<User> addUserDetails(@RequestBody PostUserRequest userRequest, HttpServletRequest request) {
+        LOGGER.info("Intercepted request for {}", request.getRequestURL());
         return new ResponseEntity<>(userService.addUserDetails(userRequest), HttpStatus.OK);
     }
 
     @PutMapping(value = "/update-user-details", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<User> updateUserDetails(@RequestBody PutUserRequest userRequest) {
+    public ResponseEntity<User> updateUserDetails(@RequestBody PutUserRequest userRequest, HttpServletRequest request) {
+        LOGGER.info("Intercepted request for {}", request.getRequestURL());
         return new ResponseEntity<>(userService.updateUserDetails(userRequest), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/delete-user", produces = "text/plain", consumes = "application/json")
-    public ResponseEntity<String> deleteUserDetails(@RequestBody DeleteUserRequest userRequest) {
+    public ResponseEntity<String> deleteUserDetails(@RequestBody DeleteUserRequest userRequest, HttpServletRequest request) {
+        LOGGER.info("Intercepted request for {}", request.getRequestURL());
         String serviceResponse = userService.deleteUserDetails(userRequest.getId());
         if(serviceResponse == null)
             return new ResponseEntity<>("Data doesn't exists for this id", HttpStatus.NOT_FOUND);
