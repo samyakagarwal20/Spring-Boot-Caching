@@ -44,6 +44,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(cacheNames = "users", key = "#result.id")
+    @CacheEvict(cacheNames = "allUsers", allEntries = true)
     public User addUserDetails(PostUserRequest userRequest) {
         UserEntity userEntity = modelMapper.map(userRequest,UserEntity.class);
         LOGGER.info("Adding new user details into DB");
